@@ -1,2 +1,1 @@
-# Translation-assistant
-Translation-assistont-AI-for you
+#python backend.py
