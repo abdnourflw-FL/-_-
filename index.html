@@ -1,23 +1,91 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Translation Assistant</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎯 Translation Assistant</h1>
-        </div>
-        <div class="chat-container" id="chat-messages">
-            <div class="message bot-message">Hello! Ask me about prices, delivery time, payment methods, or free samples.</div>
-        </div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Type your question...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+from flask import Flask, render_template, request, jsonify
+import json
+
+app = Flask(__name__)
+
+# قاعدة بيانات الشخصيات من مناقشتنا
+characters_db = {
+    "هوراس": {
+        "القوى": ["هالة الموت", "ثروة هائلة", "جيش الأشباح", "التبديل بين الجنود"],
+        "الضعف": ["الضوء", "الغباء التكتيكي", "اعتمادية على الذهب", "نطاق هالة محدود"],
+        "المكانة": "تابع بارثينون - الطابق 10",
+        "نقاط_القوة": 85,
+        "نقاط_الذكاء": 30
+    },
+    "بوريوس": {
+        "القوى": ["تحكم بالجليد", "جيش اليتي", "قوة ضربات مدمرة", "استشعار التهديد"],
+        "الضعف": ["الغرور", "لا يقاتل بشرف أحياناً", "يعتمد على القوة المباشرة"],
+        "المكانة": "حاكم الطابق 10",
+        "نقاط_القوة": 90,
+        "نقاط_الذكاء": 75
+    },
+    "بارثينون": {
+        "القوى": ["دم سحري", "استراتيجية عسكرية", "سيطرة سياسية", "قدرات سحرية محرمة"],
+        "الضعف": ["ولاء مطلق للإمبراطورة", "صراع عاطفي"],
+        "المكانة": "كونتيسة الطابق 11",
+        "نقاط_القوة": 95,
+        "نقاط_الذكاء": 90
+    }
+}
+
+def analyze_battle(character1, character2, environment=""):
+    """يحلل المعركة بين شخصيتين"""
+    
+    char1_data = characters_db[character1]
+    char2_data = characters_db[character2]
+    
+    # حساب النقاط
+    char1_score = (char1_data["نقاط_القوة"] * 0.6 + char1_data["نقاط_الذكاء"] * 0.4)
+    char2_score = (char2_data["نقاط_القوة"] * 0.6 + char2_data["نقاط_الذكاء"] * 0.4)
+    
+    # تحليل التفاعلات بين القوى والضعف
+    advantages = []
+    
+    # تحقق من نقاط الضعف
+    for weakness in char1_data["الضعف"]:
+        if any(weakness in power for power in char2_data["القوى"]):
+            char2_score += 15
+            advantages.append(f"{character2} يستغل ضعف {character1}: {weakness}")
+    
+    for weakness in char2_data["الضعف"]:
+        if any(weakness in power for power in char1_data["القوى"]):
+            char1_score += 15
+            advantages.append(f"{character1} يستغل ضعف {character2}: {weakness}")
+    
+    # تحديد الفائز
+    if char1_score > char2_score:
+        winner = character1
+        analysis = f"{character1} يفوز بسبب: {', '.join([a for a in advantages if character1 in a]) if any(character1 in a for a in advantages) else 'التفوق الاستراتيجي'}"
+    elif char2_score > char1_score:
+        winner = character2
+        analysis = f"{character2} يفوز بسبب: {', '.join([a for a in advantages if character2 in a]) if any(character2 in a for a in advantages) else 'التفوق الاستراتيجي'}"
+    else:
+        winner = "تعادل"
+        analysis = "معركة متكافئة تنتهي بتعادل"
+    
+    return {
+        "الفائز": winner,
+        "التفاصيل": {
+            character1: {"النقاط": round(char1_score, 2), "القوى": char1_data["القوى"], "الضعف": char1_data["الضعف"]},
+            character2: {"النقاط": round(char2_score, 2), "القوى": char2_data["القوى"], "الضعف": char2_data["الضعف"]}
+        },
+        "المزايا": advantages,
+        "التحليل": analysis
+    }
+
+@app.route('/')
+def index():
+    return render_template('index.html', characters=list(characters_db.keys()))
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    data = request.json
+    character1 = data['character1']
+    character2 = data['character2']
+    environment = data.get('environment', '')
+    
+    result = analyze_battle(character1, character2, environment)
+    return jsonify(result)
+
+if __name__ == '__main__':
+    app.run(debug=True)
