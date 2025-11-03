@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنمي أوديسي - محلل المعارك الأسطوري</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        
+        .header { 
+            text-align: center; 
+            padding: 40px 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #e2e8f0;
+        }
+        
+        .battle-arena {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+        
+        .character-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .character-section h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f8fafc;
+            font-size: 1.4rem;
+        }
+        
+        .character-select {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .character-select:hover {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .character-select option {
+            background: #2d3748;
+            color: white;
+            padding: 10px;
+        }
+        
+        .vs-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .vs-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .vs-text {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            padding: 16px 40px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(45deg, #64748b, #475569);
+        }
+        
+        .result-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+        
+        .winner-banner {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .battle-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .character-stats {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .character-stats h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f8fafc;
+        }
+        
+        .stat-bar {
+            margin: 15px 0;
+        }
+        
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .stat-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        .social-section {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        
+        .instagram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .instagram-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(225, 48, 108, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .battle-arena {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .vs-section {
+                margin: 20px 0;
+            }
+            
+            .battle-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏰 أنمي أوديسي</h1>
+            <p>محلل المعارك الأسطوري - اكتشف من سينتصر في المعركة!</p>
+        </div>
+
+        <div class="battle-arena">
+            <!-- الشخصية الأولى -->
+            <div class="character-section">
+                <h3>👤 اختر الشخصية الأولى</h3>
+                <select class="character-select" id="character1">
+                    <option value="">-- اختر شخصية --</option>
+                    <option value="هوراس">🦇 هوراس - سيد الظلام</option>
+                    <option value="بوريوس">❄️ بوريوس - سيد الجليد</option>
+                    <option value="بارثينون">👑 بارثينون - الإمبراطورة</option>
+                    <option value="الدم الحجري">🪨 الدم الحجري - الحارس القديم</option>
+                    <option value="جينوو">⚔️ جينوو - الساموراي</option>
+                    <option value="مورغان">🔥 مورغان - المحارب الناري</option>
+                </select>
+                
+                <div id="char1Preview" class="character-preview" style="display: none; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                    <!-- معاينة الشخصية -->
+                </div>
+            </div>
+
+            <!-- VS Section -->
+            <div class="vs-section">
+                <div class="vs-icon">⚔️</div>
+                <div class="vs-text">VS</div>
+            </div>
+
+            <!-- الشخصية الثانية -->
+            <div class="character-section">
+                <h3>👤 اختر الشخصية الثانية</h3>
+                <select class="character-select" id="character2">
+                    <option value="">-- اختر شخصية --</option>
+                    <option value="هوراس">🦇 هوراس - سيد الظلام</option>
+                    <option value="بوريوس">❄️ بوريوس - سيد الجليد</option>
+                    <option value="بارثينون">👑 بارثينون - الإمبراطورة</option>
+                    <option value="الدم الحجري">🪨 الدم الحجري - الحارس القديم</option>
+                    <option value="جينوو">⚔️ جينوو - الساموراي</option>
+                    <option value="مورغان">🔥 مورغان - المحارب الناري</option>
+                </select>
+                
+                <div id="char2Preview" class="character-preview" style="display: none; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                    <!-- معاينة الشخصية -->
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="analyzeBattle()">🎯 تحليل المعركة</button>
+            <button class="btn btn-reset" onclick="resetBattle()">🔄 إعادة تعيين</button>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="winner-banner" id="winnerBanner">
+                <!-- سيتم عرض الفائز هنا -->
+            </div>
+            
+            <div class="battle-details" id="battleDetails">
+                <!-- تفاصيل المعركة -->
+            </div>
+        </div>
+
+        <div class="social-section">
+            <h3>📱 تابعنا على إنستغرام</h3>
+            <p>شاهد تحليلات حصرية للمعارك ومحتوى أنمي يومي!</p>
+            <a href="https://instagram.com/abdnour_anime" class="instagram-btn" target="_blank">
+                📸 @abdnour_anime
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const charactersDB = {
+            "هوراس": { 
+                قوة: 85, 
+                ذكاء: 30, 
+                قوة_سحرية: 90, 
+                سرعة: 65,
+                نوع: "🦇 سيد الظلام",
+                وصف: "يسيطر على قوى الظلام والخفافيش الليلية"
+            },
+            "بوريوس": { 
+                قوة: 90, 
+                ذكاء: 75, 
+                قوة_سحرية: 85, 
+                سرعة: 70,
+                نوع: "❄️ سيد الجليد", 
+                وصف: "يستطيع تجميد أي شيء في لحظات"
+            },
+            "بارثينون": { 
+                قوة: 88, 
+                ذكاء: 95, 
+                قوة_سحرية: 98, 
+                سرعة: 80,
+                نوع: "👑 الإمبراطورة",
+                وصف: "تمتلك أعلى مستوى من القوة السحرية والقيادة"
+            },
+            "الدم الحجري": { 
+                قوة: 92, 
+                ذكاء: 88, 
+                قوة_سحرية: 96, 
+                سرعة: 50,
+                نوع: "🪨 الحارس القديم",
+                وصف: "درع حجري لا يمكن اختراقه مع قوة سحرية هائلة"
+            },
+            "جينوو": { 
+                قوة: 80, 
+                ذكاء: 90, 
+                قوة_سحرية: 75, 
+                سرعة: 90,
+                نوع: "⚔️ الساموراي",
+                وصف: "سياف سريع لا يمكن إيقافه"
+            },
+            "مورغان": { 
+                قوة: 95, 
+                ذكاء: 80, 
+                قوة_سحرية: 70, 
+                سرعة: 85,
+                نوع: "🔥 المحارب الناري",
+                وصف: "قوة نارية مدمرة مع مهارات قتالية متقدمة"
+            }
+        };
+
+        function analyzeBattle() {
+            const char1 = document.getElementById('character1').value;
+            const char2 = document.getElementById('character2').value;
+            
+            if (!char1 || !char2) {
+                alert('⚠️ الرجاء اختيار الشخصيتين أولاً!');
+                return;
+            }
+            
+            if (char1 === char2) {
+                alert('⚠️ لا يمكن اختيار نفس الشخصية للمعركة!');
+                return;
+            }
+            
+            // حساب النقاط مع أوزان مختلفة
+            const score1 = (charactersDB[char1].قوة * 0.3) + 
+                          (charactersDB[char1].ذكاء * 0.2) + 
+                          (charactersDB[char1].قوة_سحرية * 0.3) + 
+                          (charactersDB[char1].سرعة * 0.2);
+            
+            const score2 = (charactersDB[char2].قوة * 0.3) + 
+                          (charactersDB[char2].ذكاء * 0.2) + 
+                          (charactersDB[char2].قوة_سحرية * 0.3) + 
+                          (charactersDB[char2].سرعة * 0.2);
+            
+            const winner = score1 > score2 ? char1 : char2;
+            const winnerScore = Math.max(score1, score2);
+            const loserScore = Math.min(score1, score2);
+            const winPercentage = Math.round((winnerScore / (winnerScore + loserScore)) * 100);
+            
+            // عرض النتائج
+            document.getElementById('winnerBanner').innerHTML = `
+                <h2>🎉 الفائز: ${winner}</h2>
+                <p>${charactersDB[winner].نوع} - ${charactersDB[winner].وصف}</p>
+                <p style="margin-top: 10px; font-size: 1.1rem;">فرصة الفوز: ${winPercentage}%</p>
+            `;
+            
+            document.getElementById('battleDetails').innerHTML = `
+                <div class="character-stats">
+                    <h3>${char1} ${charactersDB[char1].نوع}</h3>
+                    ${createStatBars(char1)}
+                    <p style="margin-top: 15px; color: #cbd5e0;">${charactersDB[char1].وصف}</p>
+                </div>
+                <div class="character-stats">
+                    <h3>${char2} ${charactersDB[char2].نوع}</h3>
+                    ${createStatBars(char2)}
+                    <p style="margin-top: 15px; color: #cbd5e0;">${charactersDB[char2].وصف}</p>
+                </div>
+            `;
+            
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultSection').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function createStatBars(character) {
+            const stats = charactersDB[character];
+            return `
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>💪 القوة</span>
+                        <span>${stats.قوة}/100</span>
+                    </div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" style="width: ${stats.قوة}%"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>🧠 الذكاء</span>
+                        <span>${stats.ذكاء}/100</span>
+                    </div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" style="width: ${stats.ذكاء}%"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>🔮 القوة السحرية</span>
+                        <span>${stats.قوة_سحرية}/100</span>
+                    </div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" style="width: ${stats.قوة_سحرية}%"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>🏃 السرعة</span>
+                        <span>${stats.سرعة}/100</span>
+                    </div>
+                    <div class="stat-progress">
+                        <div class="stat-fill" style="width: ${stats.سرعة}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetBattle() {
+            document.getElementById('character1').value = '';
+            document.getElementById('character2').value = '';
+            document.getElementById('resultSection').style.display = 'none';
+        }
+
+        // إضافة معاينة للشخصيات عند الاختيار
+        document.getElementById('character1').addEventListener('change', function() {
+            showCharacterPreview(this.value, 'char1Preview');
+        });
+
+        document.getElementById('character2').addEventListener('change', function() {
+            showCharacterPreview(this.value, 'char2Preview');
+        });
+
+        function showCharacterPreview(character, elementId) {
+            const previewElement = document.getElementById(elementId);
+            if (character && charactersDB[character]) {
+                const stats = charactersDB[character];
+                previewElement.innerHTML = `
+                    <h4>${character} ${stats.نوع}</h4>
+                    <p>${stats.وصف}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <small>💪 ${stats.قوة}</small>
+                        <small>🧠 ${stats.ذكاء}</small>
+                        <small>🔮 ${stats.قوة_سحرية}</small>
+                        <small>🏃 ${stats.سرعة}</small>
+                    </div>
+                `;
+                previewElement.style.display = 'block';
+            } else {
+                previewElement.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
